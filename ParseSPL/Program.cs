@@ -14,7 +14,18 @@ namespace ParseSPL
 
             PdfDocument doc = PdfDocument.Open(args[0]);
             Page page = doc.GetPage(1); //assume the first page is the SPL
-            IEnumerable<Word> words = CustomWordExtractor.GetWords(page);
+            
+            //get the blocks
+            var blocks = CustomBlockExtractor.GetBlocks(page);
+
+            //print the blocks
+            int i = 0;
+            foreach (var block in blocks)
+            {
+                Console.WriteLine("BLOCK: " + i++);
+                Console.WriteLine(block.Text);
+                Console.WriteLine();
+            }
         }
     }
 }
