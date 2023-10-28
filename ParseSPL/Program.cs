@@ -24,7 +24,6 @@ namespace ParseSPL
                     }
                 }
             }
-
             //if no date is found, throw an exception that the date was not found
             throw new Exception("Date not found");
         }
