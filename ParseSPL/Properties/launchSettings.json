@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ParseSPL": {
+      "commandName": "Project",
+      "commandLineArgs": "test.pdf"
+    }
+  }
+}
