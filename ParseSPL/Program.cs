@@ -39,16 +39,6 @@ namespace ParseSPL
             //get the blocks
             var blocks = CustomBlockExtractor.GetBlocks(page);
 
-            //print the blocks
-            int i = 0;
-            foreach (var block in blocks)
-            {
-                Console.WriteLine("BLOCK: " + i++);
-                Console.WriteLine(block.Text);
-                Console.WriteLine();
-            }
-            Console.WriteLine();
-
             //try to get the date from the blocks
             try
             {
@@ -58,6 +48,24 @@ namespace ParseSPL
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+
+            //get the service providers
+            try
+            {
+                var services = ServiceProviderExtractor.GetServiceProvidersFromBlocks(blocks);
+
+                //print the service providers
+                uint i = 0;
+                foreach (var service in services)
+                {
+                    Console.WriteLine("SERVICE: " + i++);
+                    Console.WriteLine("Name: " + service.Name);
+                    Console.WriteLine();
+                }
+            } catch (Exception e)
+            {
+                Console.WriteLine("Could not parse SPL: " + e.Message);
             }
         }
     }
