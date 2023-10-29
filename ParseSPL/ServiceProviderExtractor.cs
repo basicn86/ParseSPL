@@ -68,44 +68,71 @@ namespace ParseSPL
             return closestBlock;
         }
 
+        public static List<TextBlock> FindTextBlocksAlongHorizontalAxis(TextBlock selectedBlock, IEnumerable<TextBlock> blocks, float tolerance)
+        {
+            List<TextBlock> textBlocks = new List<TextBlock>();
+
+            foreach (var block in blocks)
+            {
+                //if the block is the same as the selected block, ignore it
+                if (block == selectedBlock) continue;
+
+                //if the block is not on the same horizontal axis as the selected block, ignore it
+                if (Math.Abs(selectedBlock.BoundingBox.Bottom - block.BoundingBox.Bottom) < tolerance) continue;
+
+                //add the block to the list
+                textBlocks.Add(block);
+            }
+        }
+
         public static List<ServiceProvider> GetServiceProvidersFromBlocks(IEnumerable<TextBlock> blocks)
         {
             List<ServiceProvider> services = new List<ServiceProvider>();
 
+            List<TextBlock> serviceBlocks = new List<TextBlock>();
+
             //This is not C++, declaring variables on the same line will guarantee that they are the same type
-            TextBlock serviceBlock, providerBlock, contactInfoBlock, estimateBlock;
+            TextBlock serviceHeadingBlock, providerHeadingBlock, contactInfoHeadingBlock, estimateHeadingBlock;
             try
             {
                 //get the column heading blocks
-                serviceBlock = FindBlockExact(blocks, "service");
-                providerBlock = FindBlockExact(blocks, "provider we identified");
-                estimateBlock = FindBlockExact(blocks, "estimate");
-                contactInfoBlock = FindBlockExact(blocks, "contact information");
+                serviceHeadingBlock = FindBlockExact(blocks, "service");
+                providerHeadingBlock = FindBlockExact(blocks, "provider we identified");
+                estimateHeadingBlock = FindBlockExact(blocks, "estimate");
+                contactInfoHeadingBlock = FindBlockExact(blocks, "contact information");
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                throw new Exception("GetServiceProvidersFromBlocks: There was an error capturing the columns");
+                throw new Exception("There was an error capturing the columns");
             }
 
             foreach (var block in blocks)
             {
                 //if the block is the same as the selected blocks, ignore it
-                if (block == serviceBlock || block == providerBlock || block == contactInfoBlock) continue;
+                if (block == serviceHeadingBlock || block == providerHeadingBlock || block == contactInfoHeadingBlock || block == estimateHeadingBlock) continue;
 
-                //if the block is above the service block, ignore it
-                if (block.BoundingBox.Bottom > serviceBlock.BoundingBox.Top) continue;
+                //if the block is above the service heading, ignore it
+                if (block.BoundingBox.Bottom > serviceHeadingBlock.BoundingBox.Top) continue;
 
-                var printingBlock = FindClosestTextBlock(block, new List<TextBlock>
+                if (FindClosestTextBlock(block, new List<TextBlock>
                 {
-                    serviceBlock,
-                    providerBlock,
-                    contactInfoBlock,
-                    estimateBlock
-                });
+                    serviceHeadingBlock,
+                    providerHeadingBlock,
+                    contactInfoHeadingBlock,
+                    estimateHeadingBlock
+                }) == serviceHeadingBlock)
+                {
+                    //if the current block contains "title" in the text, append it to serviceBlocks
+                    if (block.Text.ToLower().Contains("title"))
+                    {
+                        serviceBlocks.Add(block);
+                    }
+                };
+            }
 
-                //print the printing block and block
-                Console.WriteLine("Printing Block: " + printingBlock.Text);
-                Console.WriteLine("Block: " + block.Text);
+            foreach(var block in serviceBlocks)
+            {
+
             }
 
             return services;
