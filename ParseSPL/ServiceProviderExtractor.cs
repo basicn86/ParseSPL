@@ -108,6 +108,7 @@ namespace ParseSPL
                 throw new Exception("There was an error capturing the columns");
             }
 
+            //find the service blocks, closest to the service heading block
             foreach (var block in blocks)
             {
                 //if the block is the same as the selected blocks, ignore it
@@ -132,9 +133,12 @@ namespace ParseSPL
                 };
             }
 
+            //find the details for each service block
             foreach(var block in serviceBlocks)
             {
                 List<TextBlock> nearbyBlocks = FindTextBlocksAlongHorizontalAxis(block, blocks, 5.0f);
+                ServiceProvider service = new ServiceProvider();
+                service.Service = block.Text;
 
                 //if there are no nearby blocks, throw an exception that the provider list cannot be parsed
                 if (nearbyBlocks.Count == 0) throw new Exception("Could not parse provider list");
@@ -142,8 +146,35 @@ namespace ParseSPL
                 //print out each nearby block text
                 foreach (var nearbyBlock in nearbyBlocks)
                 {
-                    Console.WriteLine(nearbyBlock.Text);
+                    if (FindClosestTextBlock(nearbyBlock, new List<TextBlock>
+                    {
+                        serviceHeadingBlock,
+                        providerHeadingBlock,
+                        contactInfoHeadingBlock,
+                        estimateHeadingBlock
+                    }) == providerHeadingBlock)
+                    {
+                        service.Provider = nearbyBlock.Text;
+                    }
                 }
+
+                //print out each nearby block text
+                foreach (var nearbyBlock in nearbyBlocks)
+                {
+                    if (FindClosestTextBlock(nearbyBlock, new List<TextBlock>
+                    {
+                        serviceHeadingBlock,
+                        providerHeadingBlock,
+                        contactInfoHeadingBlock,
+                        estimateHeadingBlock
+                    }) == contactInfoHeadingBlock)
+                    {
+                        service.ContactInfo = nearbyBlock.Text;
+                    }
+                }
+
+                //add the service to the list
+                services.Add(service);
             }
 
             return services;

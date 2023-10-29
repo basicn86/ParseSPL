@@ -59,8 +59,10 @@ namespace ParseSPL
                 uint i = 0;
                 foreach (var service in services)
                 {
-                    Console.WriteLine("SERVICE: " + i++);
-                    Console.WriteLine("Name: " + service.Name);
+                    Console.WriteLine("SERVICE NO: " + i++);
+                    Console.WriteLine("SERVICE: " + service.Service);
+                    Console.WriteLine("NAME: " + service.Provider);
+                    Console.WriteLine("CONTACT INFO: " + service.ContactInfo);
                     Console.WriteLine();
                 }
             } catch (Exception e)

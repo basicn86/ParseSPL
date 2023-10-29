@@ -8,7 +8,7 @@ namespace ParseSPL
 {
     public class ServiceProvider
     {
-        public string Name { get; set; }
+        public string Provider { get; set; }
         public string ContactInfo { get; set; }
         public string Service { get; set; }
     }
