@@ -43,15 +43,12 @@ namespace ParseSPL
         //finds the closest textblock to the selected block from a list of blocks
         public static TextBlock FindClosestTextBlock(TextBlock selectedBlock, IEnumerable<TextBlock> blocks)
         {
-            double closestDistance = int.MaxValue;
+            double closestDistance = double.MaxValue;
             TextBlock closestBlock = null;
             foreach (var block in blocks)
             {
                 //if the block is the same as the selected block, ignore it
                 if (block == selectedBlock) continue;
-
-                //if the block is above the selected block, ignore it
-                if (block.BoundingBox.Bottom > selectedBlock.BoundingBox.Top) continue;
 
                 //get the distance between the blocks
                 double distance = Math.Abs(selectedBlock.BoundingBox.Left - block.BoundingBox.Left);
@@ -76,12 +73,13 @@ namespace ParseSPL
             List<ServiceProvider> services = new List<ServiceProvider>();
 
             //This is not C++, declaring variables on the same line will guarantee that they are the same type
-            TextBlock serviceBlock, providerBlock, contactInfoBlock;
+            TextBlock serviceBlock, providerBlock, contactInfoBlock, estimateBlock;
             try
             {
                 //get the column heading blocks
                 serviceBlock = FindBlockExact(blocks, "service");
                 providerBlock = FindBlockExact(blocks, "provider we identified");
+                estimateBlock = FindBlockExact(blocks, "estimate");
                 contactInfoBlock = FindBlockExact(blocks, "contact information");
             } catch (Exception e)
             {
@@ -97,7 +95,17 @@ namespace ParseSPL
                 //if the block is above the service block, ignore it
                 if (block.BoundingBox.Bottom > serviceBlock.BoundingBox.Top) continue;
 
-                
+                var printingBlock = FindClosestTextBlock(block, new List<TextBlock>
+                {
+                    serviceBlock,
+                    providerBlock,
+                    contactInfoBlock,
+                    estimateBlock
+                });
+
+                //print the printing block and block
+                Console.WriteLine("Printing Block: " + printingBlock.Text);
+                Console.WriteLine("Block: " + block.Text);
             }
 
             return services;
