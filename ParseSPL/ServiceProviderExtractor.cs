@@ -40,21 +40,65 @@ namespace ParseSPL
             throw new Exception("Block not found");
         }
 
+        //finds the closest textblock to the selected block from a list of blocks
+        public static TextBlock FindClosestTextBlock(TextBlock selectedBlock, IEnumerable<TextBlock> blocks)
+        {
+            double closestDistance = int.MaxValue;
+            TextBlock closestBlock = null;
+            foreach (var block in blocks)
+            {
+                //if the block is the same as the selected block, ignore it
+                if (block == selectedBlock) continue;
+
+                //if the block is above the selected block, ignore it
+                if (block.BoundingBox.Bottom > selectedBlock.BoundingBox.Top) continue;
+
+                //get the distance between the blocks
+                double distance = Math.Abs(selectedBlock.BoundingBox.Left - block.BoundingBox.Left);
+
+                //if the distance is less than the closest distance, set the closest block to the current block
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestBlock = block;
+                }
+            }
+
+            //if the closest block is null, throw an exception
+            if (closestBlock == null) throw new Exception("No closest block found");
+
+            //return the closest block
+            return closestBlock;
+        }
+
         public static List<ServiceProvider> GetServiceProvidersFromBlocks(IEnumerable<TextBlock> blocks)
         {
             List<ServiceProvider> services = new List<ServiceProvider>();
-            //find the block with "service" as the text
+
+            //This is not C++, declaring variables on the same line will guarantee that they are the same type
+            TextBlock serviceBlock, providerBlock, contactInfoBlock;
             try
             {
-                var serviceBlock = FindBlockExact(blocks, "service");
-                var providerBlock = FindBlockExact(blocks, "provider we identified");
-                var contactInfoBlock = FindBlockExact(blocks, "contact information");
+                //get the column heading blocks
+                serviceBlock = FindBlockExact(blocks, "service");
+                providerBlock = FindBlockExact(blocks, "provider we identified");
+                contactInfoBlock = FindBlockExact(blocks, "contact information");
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 throw new Exception("GetServiceProvidersFromBlocks: There was an error capturing the columns");
             }
-            
+
+            foreach (var block in blocks)
+            {
+                //if the block is the same as the selected blocks, ignore it
+                if (block == serviceBlock || block == providerBlock || block == contactInfoBlock) continue;
+
+                //if the block is above the service block, ignore it
+                if (block.BoundingBox.Bottom > serviceBlock.BoundingBox.Top) continue;
+
+                
+            }
 
             return services;
         }
