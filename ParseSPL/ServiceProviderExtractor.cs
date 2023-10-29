@@ -78,11 +78,13 @@ namespace ParseSPL
                 if (block == selectedBlock) continue;
 
                 //if the block is not on the same horizontal axis as the selected block, ignore it
-                if (Math.Abs(selectedBlock.BoundingBox.Bottom - block.BoundingBox.Bottom) < tolerance) continue;
+                if (Math.Abs(selectedBlock.BoundingBox.TopLeft.Y - block.BoundingBox.TopLeft.Y) > tolerance) continue;
 
                 //add the block to the list
                 textBlocks.Add(block);
             }
+
+            return textBlocks;
         }
 
         public static List<ServiceProvider> GetServiceProvidersFromBlocks(IEnumerable<TextBlock> blocks)
@@ -132,7 +134,16 @@ namespace ParseSPL
 
             foreach(var block in serviceBlocks)
             {
+                List<TextBlock> nearbyBlocks = FindTextBlocksAlongHorizontalAxis(block, blocks, 5.0f);
 
+                //if there are no nearby blocks, throw an exception that the provider list cannot be parsed
+                if (nearbyBlocks.Count == 0) throw new Exception("Could not parse provider list");
+
+                //print out each nearby block text
+                foreach (var nearbyBlock in nearbyBlocks)
+                {
+                    Console.WriteLine(nearbyBlock.Text);
+                }
             }
 
             return services;
