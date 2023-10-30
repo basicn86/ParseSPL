@@ -12,3 +12,5 @@ To run this application, just use the following command through a CLI: `ParseSPL
 - **Handling Multiple Services from a Single Provider:** The application does not effectively handle cases where multiple services are provided by a single service provider. This can cause an exception to be thrown and the Service Provider List not to be parsed.
 - **Inconsistent Error Checking:** Due to the variance of PDFs, some PDFs may slip past the error checking and the application may be able to successfully parse the PDF document even if it contains errors.
 - **Limited Date Extraction:** As of right now, there is only a limited selection of date formats that will be recognized by the application. This selection is planned to be expanded in the future.
+## Example
+![Example 1](https://github.com/basicn86/ParseSPL/blob/master/screenshots/ex1.png)
